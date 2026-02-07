@@ -1,0 +1,49 @@
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Profile from "../screens/customer/Profile";
+import CustomerTabNavigator from "./CustomerTabNavigator";
+import InCategory from "../screens/customer/InCategory";
+import EditProfile from "../screens/customer/EditProfile";
+import Match from "../screens/customer/Match";
+import SetupGameInfo from "../screens/customer/SetupGameInfo";
+import EditGameInfo from "../screens/customer/EditGameInfo";
+import ResultUpload from "../screens/customer/ResultUpload";
+import GameRules from "../screens/customer/rules/GameRules";
+import RulesList from "../screens/customer/rules/RulesList";
+import AppErrorFallback from "../component/customer/fallback/AppErrorFallback";
+import CreateGame from "../screens/customer/createGame/CreateGame";
+import EfootballCreate from "../screens/customer/createGame/EfootballCreate";
+import CreateChess from "../screens/customer/createGame/CreateChess";
+import CreatePubg from "../screens/customer/createGame/CreatePubg";
+import { Platform } from "react-native";
+import PointsOut from "../screens/customer/PointsOut";
+import PointsIn from "../screens/customer/PointsIn";
+
+
+const Stack = createNativeStackNavigator();
+
+
+export default function CustomerNavigator(){
+    return(
+        <>
+        <Stack.Navigator  screenOptions={{headerShown:false}}>
+            <Stack.Screen component={CustomerTabNavigator} name="customerTabs" />
+            <Stack.Screen component={Profile} name="profile" options={{ animation: Platform.OS === 'ios' ? 'slide_from_left' : 'default' }} />
+            <Stack.Screen component={EditProfile} name="editProfile"/>
+            <Stack.Screen component={InCategory} name="inCategory" options={{ animation: "fade"}}/>
+            <Stack.Screen component={CreateGame} name="createGame"/>
+            <Stack.Screen component={PointsOut} name="pointsOut"/>
+            <Stack.Screen component={PointsIn} name="pointsIn"/>
+            <Stack.Screen component={Match} name="match"/>
+            <Stack.Screen component={SetupGameInfo} name="setupGameInfo"/>
+            <Stack.Screen component={EditGameInfo} name="editGameInfo"/>
+            <Stack.Screen component={ResultUpload} name="resultUpload" />
+            <Stack.Screen component={GameRules} name="gameRules"/>
+            <Stack.Screen component={RulesList} name="rulesList" />
+            <Stack.Screen component={AppErrorFallback} name="appErrorFallback"/>
+            <Stack.Screen component={EfootballCreate} name="efootballCreate"/>
+            <Stack.Screen component={CreateChess} name="createChess"/>
+            <Stack.Screen component={CreatePubg} name="createPubg"/>
+        </Stack.Navigator>
+        </>
+    );
+}

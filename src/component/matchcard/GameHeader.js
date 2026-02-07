@@ -1,0 +1,121 @@
+import { View, Text, Pressable } from "react-native"
+import { Entypo, Ionicons } from "@expo/vector-icons"
+import { scaleHeight, scaleWidth } from "../../utils/scaling"
+import { sharedStyles } from "./sharedStyleAndInfo"
+import PulseAnimation from "../PulseAnimation"
+import { useBottomSheet } from "../../context/BottomSheetContext"
+
+const GameHeader = ({ game, isLight, isCreator, user, handleDeleteChallenge, handleLeaveChallenge, forOpenGames }) => {
+  const { showConfirmSheet } = useBottomSheet()
+
+  const handleDelete = () => {
+    showConfirmSheet({
+      title: isCreator ? "Cancel Match?" : "Leave Match?",
+      message:
+        isCreator
+          ? "Are you sure you want to cancelled your match?"
+          : "Are you sure you want to leave this match?",
+      confirmText: "Confirm",
+      cancelText: "Cancel",
+      isDestructive: true,
+      onConfirm: () => {
+        if (isCreator || game.is_free) {
+          handleDeleteChallenge(game?.id)
+        } else {
+          handleLeaveChallenge(game?.id)
+        }
+      },
+    })
+  }
+
+  // Icon configurations with vibrant colors
+  const gameIconConfig = {
+    backgroundColor: isLight ? '#A855F7' : 'rgba(109, 140, 255, 0.2)',
+    iconColor: isLight ? '#ffffff' : '#6d8cff'
+  }
+
+  const modeIconConfig = {
+    backgroundColor: isLight ? '#14B8A6' : 'rgba(32, 201, 151, 0.2)',
+    iconColor: isLight ? '#ffffff' : '#20c997'
+  }
+
+
+
+  return (
+    <View style={sharedStyles.gameInfoHeader}>
+      <View style={[sharedStyles.gameInfoItem, !isLight && sharedStyles.gameInfoItemDark]}>
+        <View style={[
+          sharedStyles.iconContainer, 
+          { backgroundColor: gameIconConfig.backgroundColor },
+          // Add shadow only in light mode
+          isLight && {
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          }
+        ]}>
+          <Ionicons name="game-controller" size={scaleWidth(14)} color={gameIconConfig.iconColor} />
+        </View>
+        <Text style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}>
+          {game.game?.name || "Game"}
+        </Text>
+      </View>
+
+      <View style={[sharedStyles.gameInfoItem, !isLight && sharedStyles.gameInfoItemDark]}>
+        <View style={[
+          sharedStyles.iconContainer, 
+          { backgroundColor: modeIconConfig.backgroundColor },
+          // Add shadow only in light mode
+          isLight && {
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.35,
+            shadowRadius: 4.5,
+          }
+        ]}>
+          <Ionicons name="people-outline" size={scaleWidth(14)} color={modeIconConfig.iconColor} />
+        </View>
+        <Text style={[sharedStyles.gameInfoText, !isLight && sharedStyles.gameInfoTextDark]}>
+          {game.game?.game_mode || "Mode"}
+        </Text>
+      </View>
+      {/* 
+      {!game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress"&& ( */}
+      <View style={{ flexDirection: "row", alignItems: "center", gap: scaleWidth(20), marginLeft: "auto", paddingRight: forOpenGames ? scaleWidth(10) : 0 }}>
+        {
+          ((game.status === 'in_progress' || game.status === 'not_started' ) && !game.is_free) && (
+            <View>
+              <PulseAnimation size={scaleWidth(10)} color="#00C851" />
+            </View>
+          )
+        }
+
+
+
+        {
+          !game.isAccepted && game.status !== "cancelled" && game.status !== "expired" && game.status !== "completed" && game.status !== "in_progress" && game.status !== "resolved" && !forOpenGames && !game.is_free && (
+            <Pressable onPress={handleDelete}>
+
+             <Entypo name="squared-cross" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
+            </Pressable>
+          )
+        }
+        {
+          game.status !== "cancelled" && game.is_free && !forOpenGames && game.status !== "completed" && game.status !== "in_progress" && (
+             <Pressable onPress={handleDelete}>
+             <Entypo name="squared-cross" size={scaleWidth(18)} color={isLight ? "#000000" : "#fff"} />
+            </Pressable>
+          )
+        }
+
+
+      </View>
+      {/* )} */}
+    </View>
+  )
+}
+
+export default GameHeader

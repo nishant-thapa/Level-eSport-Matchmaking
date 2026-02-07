@@ -1,0 +1,123 @@
+import { Text, View } from "react-native"
+import GameHeader from "../GameHeader"
+import { sharedStyles } from "../sharedStyleAndInfo"
+import GameDetails from "../gameDetails/GameDetails"
+import CreatorInfo from "../CreatorInfo"
+import StatusDisplay from "../StatusDisplay"
+import OpponentsList from "../OpponentsList"
+import CredentialsSection from "../CredentialsSection"
+import ActionButtons from "../ActionButtons"
+import StampID from "../StampID"
+import { useThemeStore } from "../../../store/themeStore"
+import { useAuthStore } from "../../../store/authStore"
+import { Time } from "../Time"
+import { scaleHeight, scaleWidth } from "../../../utils/scaling"
+import SettingInfo from "../SettingInfo"
+import { Fontisto, MaterialIcons } from "@expo/vector-icons"
+
+
+/**
+ * Main MatchCard Component
+ * Handles both creator and opponent views based on props
+ */
+const MatchCard = ({
+  game,
+  win_pot,
+  isCreator = false,
+  handleSendGameCredentials,
+  handleResultUpload,
+  handleAcceptChallengeOnCopy,
+  handleDeleteChallenge,
+  handleLeaveChallenge,
+  handleConfirmedOpponent, // Added handleConfirmedOpponent prop for creator functionality
+  handleConfirmChallenge,
+  forOpenGames = false,
+}) => {
+  const { isLight } = useThemeStore()
+  const { user } = useAuthStore()
+
+  return (
+    <View style={[sharedStyles.card, !isLight && sharedStyles.cardDark]}>
+      <View style={sharedStyles.cardContent}>
+        {/* Game Info Header */}
+        <GameHeader
+          game={game}
+          isLight={isLight}
+          isCreator={isCreator}
+          user={user}
+          handleDeleteChallenge={handleDeleteChallenge}
+          handleLeaveChallenge={handleLeaveChallenge}
+          forOpenGames={forOpenGames}
+        />
+
+        {/* Main Content Columns */}
+        <View style={sharedStyles.mainSection}>
+          {/* Left Section - Game Details */}
+          <View style={sharedStyles.leftSection}>
+            <SettingInfo />
+            <GameDetails game={game} isLight={isLight} />
+          </View>
+
+          {/* Vertical Divider */}
+          <View style={[sharedStyles.verticalDivider, !isLight && sharedStyles.verticalDividerDark]} />
+
+          {/* Right Section - Creator/User Info */}
+          <View style={sharedStyles.rightSection}>
+            <CreatorInfo game={game} isLight={isLight} isCreator={isCreator} user={user} />
+
+            <StatusDisplay game={game} isLight={isLight} win_pot={win_pot} user={user} />
+            
+            {/* Challenge ID Stamp */}
+            <StampID gameId={game.id} isLight={isLight} />
+          </View>
+
+        </View>
+
+        {
+          forOpenGames ? (
+            <Time time={game.created_at} isDark={!isLight} />
+          ) : (
+            <Time time={game.created_at} isDark={!isLight} forMatch={true} />
+
+          )
+        }
+
+
+        <View
+          style={[sharedStyles.buttonLine, { backgroundColor: isLight ? "#e0e0e0" : "rgba(255, 255, 255, 0.1)" }]}
+        />
+
+        {isCreator && <OpponentsList game={game} isLight={isLight} handleConfirmedOpponent={handleConfirmedOpponent} />}
+
+        {/* Credentials and Actions */}
+        {
+          !forOpenGames && (
+            <CredentialsSection
+              game={game}
+              isLight={isLight}
+              isCreator={isCreator}
+              user={user}
+              handleSendGameCredentials={handleSendGameCredentials}
+              handleAcceptChallengeOnCopy={handleAcceptChallengeOnCopy}
+            />
+          )
+        }
+
+        <ActionButtons
+          game={game}
+          isLight={isLight}
+          isCreator={isCreator}
+          user={user}
+          handleResultUpload={handleResultUpload}
+          forOpenGames={forOpenGames}
+          handleConfirmChallenge={handleConfirmChallenge}
+        />
+
+        {/* Bottom Line */}
+
+      </View>
+    </View>
+  )
+}
+
+export default MatchCard
